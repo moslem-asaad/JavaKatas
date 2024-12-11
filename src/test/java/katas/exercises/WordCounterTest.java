@@ -23,7 +23,7 @@ public class WordCounterTest {
     }
     @Test
     public void whiteSpacesOnlySentence(){
-        assertEquals(0, countWords("          "));
+        assertEquals(0, countWords("             "));
     }
 
     @Test
