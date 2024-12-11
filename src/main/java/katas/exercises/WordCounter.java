@@ -1,5 +1,7 @@
 package katas.exercises;
 
+import java.util.Arrays;
+
 public class WordCounter {
 
     /**
@@ -9,11 +11,14 @@ public class WordCounter {
      * @return the number of words in the sentence
      */
     public static int countWords(String sentence) {
-        return 0;
+        if (sentence == null || sentence.trim().isEmpty()) {
+            return 0;
+        }
+        return sentence.trim().split("\\s+").length;
     }
 
     public static void main(String[] args) {
-        String sentence = "This is a sample sentence for counting words.";
+        String sentence = "This is a sample     sentence for counting words.";
         int wordCount = countWords(sentence);
         System.out.println(wordCount);
     }
