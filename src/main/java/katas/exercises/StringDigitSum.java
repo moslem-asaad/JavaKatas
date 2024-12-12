@@ -9,7 +9,12 @@ public class StringDigitSum {
      * @return the sum of all digits in the string
      */
     public static int sumOfDigits(String input) {
-        return 0;
+        if(input == null) throw new IllegalArgumentException("Input can't be null");
+        int sum = 0;
+        for(char c : input.toCharArray()){
+            if(Character.isDigit(c)) sum += (c - '0');
+        }
+        return sum;
     }
 
     public static void main(String[] args) {
