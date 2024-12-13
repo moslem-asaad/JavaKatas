@@ -1,5 +1,9 @@
 package katas.exercises;
 
+import org.springframework.boot.util.LambdaSafe;
+
+import java.util.concurrent.Callable;
+
 public class TimeMe {
 
     /**
@@ -10,7 +14,13 @@ public class TimeMe {
      */
     public static long measureExecutionTime(Runnable func) {
         //hint:  System.currentTimeMillis();
-        return 0;
+        if (func == null) {
+            throw new IllegalArgumentException("Function cannot be null");
+        }
+        long startTime = System.currentTimeMillis();
+        func.run();
+
+        return System.currentTimeMillis() - startTime;
     }
 
     public static void main(String[] args) {
