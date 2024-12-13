@@ -11,6 +11,15 @@ public class UniqueString {
      * @return true if all characters are unique, false otherwise
      */
     public static boolean isUnique(String str) {
+        if(str == null){
+            throw new NullPointerException("String can't be null");
+        }
+        str = str.toLowerCase();
+        int [] counts = new int[26];
+        for(char c : str.toCharArray()){
+            counts[c - 'a']++;
+            if(counts[c - 'a'] > 1) return false;
+        }
         return true;
     }
 

@@ -12,8 +12,21 @@ public class ListFlatten {
      * @return a flat list containing all integers from the nested structure
      */
     public static List<Integer> flattenList(List<Object> nestedList) {
+        if(nestedList == null){
+            throw new NullPointerException("nestedList can't be null");
+        }
         // hint: instanceof
-        return new ArrayList<>();
+        List<Integer> res = new ArrayList<>();
+        for(Object ob: nestedList){
+            if(ob instanceof List){
+                res.addAll(flattenList((List<Object>) ob));
+            }else if (ob instanceof Integer){
+                res.add((Integer) ob);
+            }else{
+                throw new ClassCastException("The items should be numbers");
+            }
+        }
+        return res;
     }
 
     public static void main(String[] args) {
@@ -22,6 +35,7 @@ public class ListFlatten {
         nestedList.add(List.of(2, 3));
         nestedList.add(List.of(4, List.of(5, 6)));
         nestedList.add(7);
+        System.out.println(nestedList.toString());
 
         List<Integer> flatList = flattenList(nestedList);
 

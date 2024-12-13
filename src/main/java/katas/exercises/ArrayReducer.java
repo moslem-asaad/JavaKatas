@@ -9,7 +9,12 @@ public class ArrayReducer {
      * @param numbers the array of integers to modify
      */
     public static void reduceArray(int[] numbers) {
-
+        if (numbers == null){
+            throw new NullPointerException("input can't be null");
+        }
+        for(int i = numbers.length-1;i>0;i--){
+            numbers[i] = numbers[i] - numbers[i-1];
+        }
     }
 
     public static void main(String[] args) {
