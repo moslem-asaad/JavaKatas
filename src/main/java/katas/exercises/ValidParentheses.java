@@ -1,5 +1,7 @@
 package katas.exercises;
 
+import java.util.Stack;
+
 public class ValidParentheses {
 
     /**
@@ -14,7 +16,33 @@ public class ValidParentheses {
      */
     public static boolean isValidParentheses(String s) {
         // Hint for efficient implementation: stack
-        return false;
+        Stack <Character> stack = new Stack<>();
+        for(char c : s.toCharArray()){
+            if (isOpen(c)){
+                stack.add(c);
+            }
+            else {
+                if (isClose(c)) {
+                    if(stack.isEmpty()) return false;
+                    char first = stack.peek();
+                    if (isMatch(first, c)) stack.pop();
+                    else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    private static boolean isOpen(char c){
+        return c == '(' || c == '{' || c == '[';
+    }
+    private static boolean isClose(char c){
+        return c == ')' || c =='}' || c == ']';
+    }
+    private static boolean isMatch(char c1, char c2){
+        return (c1 == '(' && c2 == ')') || (c1 == '{' && c2 == '}') || (c1 == '[' && c2 == ']');
     }
 
     public static void main(String[] args) {
