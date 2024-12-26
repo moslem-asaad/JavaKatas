@@ -10,6 +10,23 @@ public class SemanticVersionComparator {
      * @return -1 if version1 < version2, 1 if version1 > version2, 0 if they are equal
      */
     public static int compareVersions(String version1, String version2) {
+        if (version1.isEmpty() || version2.isEmpty()) {
+            throw new IllegalArgumentException("version cannot be empty");
+        }
+        String[] v1 = version1.split("\\.");
+        if (v1.length < 3) throw new IllegalArgumentException("incorrect syntax for version 1");
+
+        String[] v2 = version2.split("\\.");
+        if (v2.length < 3) throw new IllegalArgumentException("incorrect syntax for version 2");
+
+        for (int i = 0; i < 3; i++) {
+            int v1Part = Integer.parseInt(v1[i]);
+            int v2Part = Integer.parseInt(v2[i]);
+
+            if (v1Part < v2Part) return -1;
+            else if (v1Part > v2Part) return 1;
+        }
+
         return 0;
     }
 
