@@ -1,5 +1,6 @@
 package katas.exercises;
 
+import java.util.Map;
 import java.util.Stack;
 
 public class MaxStorageCapacity {
@@ -20,8 +21,40 @@ public class MaxStorageCapacity {
      * @return the area of the largest rectangle formed between containers
      */
     public static int maxStorageArea(int[] containers) {
+        if(containers.length == 0) return 0;
         // Hint for efficient implementation: stack
-        return 0;
+        Stack <Integer> indices = new Stack<>();
+        int max = 0;
+        indices.push(0);
+        for(int i = 1;i< containers.length;i++){
+            int prevHight = containers[indices.peek()];
+            while (prevHight > containers[i]){
+                int indx = indices.pop();
+                if(indices.isEmpty()){
+                    int area = prevHight * (i);
+                    max = Math.max(max,area);
+                    prevHight = containers[i]-1;
+                }
+                else{
+                    int area = prevHight * (i - indices.peek() - 1);
+                    max = Math.max(max,area);
+                    prevHight = containers[indices.peek()];
+                }
+            }
+            indices.push(i);
+        }
+        while (!indices.isEmpty()){
+            int i = containers.length;
+            int hight = containers[indices.pop()];
+            if(indices.isEmpty()){
+                int area = hight * i;
+                max = Math.max(max,area);
+            }else{
+                int area = hight * (i - indices.peek() - 1);
+                max = Math.max(max,area);
+            }
+        }
+        return max;
     }
 
     public static void main(String[] args) {

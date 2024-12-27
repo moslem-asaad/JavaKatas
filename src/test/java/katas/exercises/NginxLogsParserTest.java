@@ -68,7 +68,7 @@ class NginxLogsParserTest {
         assertEquals("Invalid status code: 9999", exception.getMessage());
     }
 
-    
+
     @Test
     void testEmptyUserAgent() {
         String logEntry = "122.176.223.47 - - [05/Feb/2024:08:29:40 +0000] " +
