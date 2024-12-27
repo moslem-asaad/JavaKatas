@@ -1,6 +1,7 @@
 package katas.exercises;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RequirementsCoverage {
 
@@ -23,7 +24,35 @@ public class RequirementsCoverage {
      * @return a list of indices of the minimal subset of test cases that covers all requirements
      */
     public static List<Integer> selectMinimalTestCases(List<List<Integer>> testCases) {
-        return null;
+        Set<Integer> uncoveredRequirements = new HashSet<>();
+        for (List<Integer> testCase : testCases) {
+            uncoveredRequirements.addAll(testCase);
+        }
+        List<Integer> res = new ArrayList<>();
+        while (!uncoveredRequirements.isEmpty()) {
+            int bestTestCaseIndex = -1;
+            Set<Integer> bestCoveredRequirements = new HashSet<>();
+
+            // Find the test case that covers the most uncovered requirements
+            for (int i = 0; i < testCases.size(); i++) {
+                List<Integer> testCase = testCases.get(i);
+                Set<Integer> covered = new HashSet<>(testCase);
+                covered.retainAll(uncoveredRequirements);
+                // Check if this test case is the best so far
+                if (covered.size() > bestCoveredRequirements.size() ||
+                        (covered.size() == bestCoveredRequirements.size() && !res.contains(i))) {
+                    bestTestCaseIndex = i;
+                    bestCoveredRequirements = covered;
+                }
+            }
+
+            if (bestTestCaseIndex != -1) {
+                res.add(bestTestCaseIndex);
+                uncoveredRequirements.removeAll(bestCoveredRequirements); // Remove covered requirements
+            }
+        }
+
+        return res;
     }
 
     public static void main(String[] args) {
