@@ -1,5 +1,7 @@
 package katas.exercises;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,8 +34,102 @@ public class NginxLogsParser {
      * @throws IllegalArgumentException if the log format is invalid
      */
     public static Map<String, String> parseLog(String log) {
+        String logPattern = "(\\S+) - - \\[(.*?)] \"(\\S+) (\\S+) HTTP/(\\S+)\" (\\d+) (\\d+) \"-\" \"(.*?)\"";
+
+        Pattern pattern = Pattern.compile(logPattern);
+        Matcher matcher = pattern.matcher(log);
+
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("Invalid log format");
+        }
+
         Map<String, String> parsedData = new HashMap<>();
+        String clientIp = matcher.group(1);
+        validateClientIp(clientIp);
+        parsedData.put("client_ip", clientIp);
+
+        String date = matcher.group(2);
+        validateDate(date);
+        parsedData.put("date", date);
+
+        String httpMethod = matcher.group(3);
+        validateHttpMethod(httpMethod);
+        parsedData.put("http_method", httpMethod);
+
+        String path = matcher.group(4);
+        validatePath(path);
+        parsedData.put("path", path);
+
+        String httpVersion = matcher.group(5);
+        validateHttpVersion(httpVersion);
+        parsedData.put("http_version", httpVersion);
+
+        String status = matcher.group(6);
+        validateStatus(status);
+        parsedData.put("status", status);
+
+        String responseBytes = matcher.group(7);
+        validateResponseBytes(responseBytes);
+        parsedData.put("response_bytes", responseBytes);
+
+        String userAgent = matcher.group(8);
+        validateUserAgent(userAgent);
+        parsedData.put("user_agent", userAgent);
+
         return parsedData;
+    }
+    private static void validateClientIp(String clientIp) {
+        String ipPattern = "\\b(\\d{1,3}\\.){3}\\d{1,3}\\b";
+        if (!clientIp.matches(ipPattern)) {
+            throw new IllegalArgumentException("Invalid client IP: " + clientIp);
+        }
+    }
+
+    private static void validateDate(String date) {
+        Pattern datePattern = Pattern.compile("(\\d{2})/(\\w{3})/(\\d{4}):(\\d{2}):(\\d{2}):(\\d{2}) ([+-]\\d{4})");
+        if (!datePattern.matcher(date).matches()) {
+            throw new IllegalArgumentException("Invalid date format: " + date);
+        }
+    }
+
+    private static void validateHttpMethod(String httpMethod) {
+        String[] validMethods = {"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"};
+        for (String method : validMethods) {
+            if (method.equals(httpMethod)) {
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Invalid HTTP method: " + httpMethod);
+    }
+
+    private static void validatePath(String path) {
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("Invalid path: " + path);
+        }
+    }
+
+    private static void validateHttpVersion(String httpVersion) {
+        if (!httpVersion.matches("\\d\\.\\d")) {
+            throw new IllegalArgumentException("Invalid HTTP version: " + httpVersion);
+        }
+    }
+
+    private static void validateStatus(String status) {
+        if (!status.matches("\\d{3}")) {
+            throw new IllegalArgumentException("Invalid status code: " + status);
+        }
+    }
+
+    private static void validateResponseBytes(String responseBytes) {
+        if (!responseBytes.matches("\\d+")) {
+            throw new IllegalArgumentException("Invalid response bytes: " + responseBytes);
+        }
+    }
+
+    private static void validateUserAgent(String userAgent) {
+        if (userAgent.isEmpty()) {
+            throw new IllegalArgumentException("Invalid user agent: " + userAgent);
+        }
     }
 
     public static void main(String[] args) {
