@@ -24,35 +24,35 @@ public class RequirementsCoverage {
      * @return a list of indices of the minimal subset of test cases that covers all requirements
      */
     public static List<Integer> selectMinimalTestCases(List<List<Integer>> testCases) {
-        Set<Integer> uncoveredRequirements = new HashSet<>();
+        Set<Integer> allRequirements = new HashSet<>();
         for (List<Integer> testCase : testCases) {
-            uncoveredRequirements.addAll(testCase);
-        }
-        List<Integer> res = new ArrayList<>();
-        while (!uncoveredRequirements.isEmpty()) {
-            int bestTestCaseIndex = -1;
-            Set<Integer> bestCoveredRequirements = new HashSet<>();
-
-            // Find the test case that covers the most uncovered requirements
-            for (int i = 0; i < testCases.size(); i++) {
-                List<Integer> testCase = testCases.get(i);
-                Set<Integer> covered = new HashSet<>(testCase);
-                covered.retainAll(uncoveredRequirements);
-                // Check if this test case is the best so far
-                if (covered.size() > bestCoveredRequirements.size() ||
-                        (covered.size() == bestCoveredRequirements.size() && !res.contains(i))) {
-                    bestTestCaseIndex = i;
-                    bestCoveredRequirements = covered;
-                }
-            }
-
-            if (bestTestCaseIndex != -1) {
-                res.add(bestTestCaseIndex);
-                uncoveredRequirements.removeAll(bestCoveredRequirements); // Remove covered requirements
-            }
+            allRequirements.addAll(testCase);
         }
 
-        return res;
+        List<Integer> result = new ArrayList<>();
+        findMinimalSet(testCases, new ArrayList<>(), allRequirements, result, 0);
+        return result;
+    }
+
+    private static void findMinimalSet(List<List<Integer>> testCases, List<Integer> currentSet, Set<Integer> uncovered,
+                                       List<Integer> bestSet, int startIndex) {
+        // If all requirements are covered
+        if (uncovered.isEmpty()) {
+            if (bestSet.isEmpty() || currentSet.size() < bestSet.size()) {
+                bestSet.clear();
+                bestSet.addAll(currentSet);
+            }
+            return;
+        }
+
+        for (int i = startIndex; i < testCases.size(); i++) {
+            List<Integer> testCase = testCases.get(i);
+            Set<Integer> newUncovered = new HashSet<>(uncovered);
+            newUncovered.removeAll(testCase);
+            currentSet.add(i);
+            findMinimalSet(testCases, currentSet, newUncovered, bestSet, i + 1);
+            currentSet.remove(currentSet.size() - 1);
+        }
     }
 
     public static void main(String[] args) {
@@ -60,6 +60,7 @@ public class RequirementsCoverage {
                 List.of(1, 2, 3),
                 List.of(1, 4),
                 List.of(2, 3, 4),
+
                 List.of(1, 5),
                 List.of(3, 5)
         );
