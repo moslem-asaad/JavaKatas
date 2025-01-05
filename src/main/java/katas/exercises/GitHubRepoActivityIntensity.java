@@ -1,9 +1,20 @@
 package katas.exercises;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.Instant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,6 +38,7 @@ public class GitHubRepoActivityIntensity {
 
     private static final String GITHUB_API_BASE_URL = "https://api.github.com/repos";
 
+
     /**
      * Fetches commit timestamps for the specified repository using the GitHub API.
      *
@@ -37,12 +49,53 @@ public class GitHubRepoActivityIntensity {
      */
     public static List<Instant> fetchCommitTimestamps(String owner, String repo) throws Exception {
         // example:
-        URL url = new URL("...");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/vnd.github+json");
-        return null;
+        String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Accept", "application/vnd.github+json")
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new Exception("Failed to fetch data: HTTP response code " + response.statusCode());
+        }
+
+        List<Instant> commitTimestamps = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode commitsArray = objectMapper.readTree(response.body());
+
+        for (JsonNode commitNode : commitsArray) {
+            String timestamp = commitNode.get("commit").get("author").get("date").asText();
+            commitTimestamps.add(Instant.parse(timestamp));
+        }
+        return commitTimestamps;
+
     }
+
+    public static List<Instant> fetchCommitTimestamps(String owner, String repo, HttpClient httpClient) throws Exception {
+        String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/commits";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl))
+                .header("Accept", "application/vnd.github+json")
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new Exception("Failed to fetch data: HTTP response code " + response.statusCode());
+        }
+
+        List<Instant> commitTimestamps = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode commitsArray = objectMapper.readTree(response.body());
+
+        for (JsonNode commitNode : commitsArray) {
+            String timestamp = commitNode.get("commit").get("author").get("date").asText();
+            commitTimestamps.add(Instant.parse(timestamp));
+        }
+        return commitTimestamps;
+    }
+
 
     /**
      * Calculates the average time between consecutive commits.
@@ -51,14 +104,25 @@ public class GitHubRepoActivityIntensity {
      * @return the average time in hours
      */
     public static double calculateAverageTimeBetweenCommits(List<Instant> timestamps) {
-        return -1;
+        if(timestamps == null || timestamps.size() < 2){
+            throw new IllegalArgumentException("At least two timestamps are required to calculate the average time.");
+        }
+        long totalSeconds = 0;
+        for(int i = 1; i<timestamps.size();i++){
+            Duration duration = Duration.between(timestamps.get(i), timestamps.get(i-1));
+            totalSeconds+=Math.abs(duration.getSeconds());
+        }
+        double avgSeconds = (double) totalSeconds / (timestamps.size()-1);
+        return avgSeconds/3600.0;
     }
 
     public static void main(String[] args) {
         try {
             List<Instant> timestamps = fetchCommitTimestamps("torvalds", "linux");
             double avgTime = calculateAverageTimeBetweenCommits(timestamps);
-
+            for (Instant in: timestamps){
+                System.out.println(" -- " + in);
+            }
             System.out.printf("The average time between commits in the repository is %.2f hours.%n", avgTime);
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
