@@ -3,6 +3,7 @@ package katas.exercises;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 
