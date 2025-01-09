@@ -1,6 +1,7 @@
 package katas.exercises;
 
-import java.util.List;
+import java.util.*;
+
 
 public class OrderedMap<K, V> {
     /**
@@ -13,7 +14,12 @@ public class OrderedMap<K, V> {
      * The order should be preserved as the keys are added to the map.
      */
 
+    private LinkedList<K> keyOrders;
+    private Map<K,V> map;
+
     public OrderedMap() {
+        keyOrders = new LinkedList<>();
+        map = new HashMap<>();
 
     }
 
@@ -22,7 +28,10 @@ public class OrderedMap<K, V> {
          * Add a key-value pair to the map.
          * If the key already exists, update its value while preserving the order.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if(!map.containsKey(key)){
+            keyOrders.addLast(key);
+        }
+        map.put(key,value);
     }
 
     public V get(K key) {
@@ -32,7 +41,7 @@ public class OrderedMap<K, V> {
          * @param key: The key whose value is to be retrieved.
          * @return: The value associated with the key, or null if the key does not exist.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return map.getOrDefault(key, null);
     }
 
     public void remove(K key) {
@@ -41,7 +50,11 @@ public class OrderedMap<K, V> {
          *
          * @param key: The key to be removed.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (!map.containsKey(key)){
+            throw new IllegalArgumentException("Key does not exist");
+        }
+        map.remove(key);
+        keyOrders.remove(key);
     }
 
     public List<K> keys() {
@@ -50,7 +63,7 @@ public class OrderedMap<K, V> {
          *
          * @return: A list of keys in insertion order.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return keyOrders;
     }
 
     public int size() {
@@ -59,14 +72,15 @@ public class OrderedMap<K, V> {
          *
          * @return: The size of the map.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        return keyOrders.size();
     }
 
     public void clear() {
         /**
          * Remove all key-value pairs from the map.
          */
-        throw new UnsupportedOperationException("Not implemented yet.");
+        map.clear();
+        keyOrders.clear();
     }
 
     public static void main(String[] args) {
