@@ -49,6 +49,8 @@ public class URLShortenerTest {
         assertEquals("URL Not Found - " + invalidShortUrl, exception.getMessage());
     }
 
+
+
     @Test
     public void testGenerateNext() {
         assertEquals("a", shortener.generateNext(""));
