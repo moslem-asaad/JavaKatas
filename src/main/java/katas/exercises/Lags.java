@@ -46,7 +46,29 @@ public class Lags {
      * @return the maximum profit
      */
     public static int maximizeProfit(List<Request> requests) {
-        return 0;
+        if (requests.isEmpty()) return 0;
+        int [] dp = new int[requests.size()];
+        dp[0] = requests.get(0).payment;
+        for(int i = 1;i<dp.length;i++){
+            int indx =findPrevOne(requests,i);
+            if(indx!=-1)
+                dp[i] = Math.max(dp[i-1],requests.get(i).payment + dp[findPrevOne(requests,i)]);
+            else{
+               dp[i] =  Math.max(dp[i-1],requests.get(i).payment);
+            }
+        }
+        return dp[requests.size()-1];
+    }
+
+    private static int findPrevOne(List<Request> requests, int index){
+        Request curr = requests.get(index);
+        for (int i = index - 1; i>=0;i--){
+            Request request = requests.get(i);
+            if (curr.startTime>= request.startTime + request.duration){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static void main(String[] args) {
