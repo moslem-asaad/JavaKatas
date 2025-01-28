@@ -21,7 +21,25 @@ package katas.exercises;
 public class KthSmallestElementInBST {
 
     public static int kthSmallest(TreeNode root, int k) {
-        return -1;
+        int [] count = {0};
+        int [] res = {0};
+        helper(root,k,count,res);
+        return res[0];
+    }
+
+    public static void helper(TreeNode node, int k, int [] count, int [] result){
+        if (node == null){
+            return;
+        }
+
+        helper(node.left,k,count,result);
+        count[0]++;
+        if (count[0] == k){
+            result[0] = node.val;
+            return;
+        }
+
+        helper(node.right,k,count,result);
     }
 
     public static void main(String[] args) {
