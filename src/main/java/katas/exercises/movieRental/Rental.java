@@ -20,4 +20,12 @@ public class Rental {
     public Movie getMovie() {
         return _movie;
     }
+
+    public double getAmount() {
+        return _movie.calculateRentalAmount(_daysRented);
+    }
+
+    public int getFrequentRenterPoints() {
+        return _movie.calculateFrequentRenterPoints(_daysRented);
+    }
 }

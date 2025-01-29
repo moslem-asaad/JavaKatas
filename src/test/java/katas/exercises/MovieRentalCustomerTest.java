@@ -32,4 +32,34 @@ public class MovieRentalCustomerTest {
         assertEquals(expected, customer.statement());
     }
 
+    @Test
+    void testStatement() {
+        MovieRentalCustomer customer = new MovieRentalCustomer("martin");
+        customer.addRental(new Rental(new Movie("Ran", Movie.REGULAR), 3));
+        customer.addRental(new Rental(new Movie("Trois Couleurs: Bleu", Movie.NEW_RELEASE), 1));
+
+        String expected = "Rental Record for martin\n" +
+                "\tRan\t3.5\n" +
+                "\tTrois Couleurs: Bleu\t3.0\n" +
+                "Amount owed is 6.5\n" +
+                "You earned 2 frequent renter points";
+        assertEquals(expected, customer.statement());
+    }
+
+    @Test
+    void testHtmlStatement() {
+        MovieRentalCustomer customer = new MovieRentalCustomer("martin");
+        customer.addRental(new Rental(new Movie("Ran", Movie.REGULAR), 3));
+        customer.addRental(new Rental(new Movie("Trois Couleurs: Bleu", Movie.NEW_RELEASE), 1));
+
+        String expected = "<h1>Rental Record for <em>martin</em></h1>\n" +
+                "<table>\n" +
+                "<tr><td>Ran</td><td>3.5</td></tr>\n" +
+                "<tr><td>Trois Couleurs: Bleu</td><td>3.0</td></tr>\n" +
+                "</table>\n" +
+                "<p>Amount owed is <em>6.5</em></p>\n" +
+                "<p>You earned <em>2</em> frequent renter points</p>";
+        assertEquals(expected, customer.htmlStatement());
+    }
+
 }
